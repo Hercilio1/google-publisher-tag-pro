@@ -6,6 +6,11 @@ import {
 } from "./adsSettings";
 
 /**
+ * @constant {Set} loadedBlocks store the ads that are already loaded.
+ */
+const loadedBlocks = new Set();
+
+/**
  * Define a slot based on the sent params
  *
  * @param {string}  id       Block div id.
@@ -14,6 +19,10 @@ import {
  * @param {string}  agent    'desktop' or 'mobile' or both ('any'). Default is 'any'.
  * @param {boolean} refresh  Refresh ads or not. Default is false.
  * @param {string}  clientIdPrefix A custom clientIdPrefix. Default is null.
+ * 
+ * @return {Object|null} The slot object or null if the slot has been loaded before.
+ * 
+ * @throws {Error} If the slot is not found or it is badly defined.
  */
 export const loadAdBlock = (
   id,
@@ -24,7 +33,11 @@ export const loadAdBlock = (
   clientIdPrefix = null
 ) => {
   if (!id || !sizes || !clientIdSuffix) {
-    return;
+    throw new Error(`Invalid ad block ${id} - ${sizes} - ${clientIdSuffix}`);
+  }
+
+  if (loadedBlocks.has(id)) {
+    return null;
   }
 
   if (!clientIdPrefix) {
