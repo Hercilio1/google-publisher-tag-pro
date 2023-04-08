@@ -49,7 +49,7 @@ const defineAdSlot = (
  */
 const defineAdsBlocks = () => {
   for (const index in blocks) {
-    if (blocks[index]) {
+    if (blocks[index] && !blocks[index].loaded && !blocks[index].error) {
       try {
         defineAdSlot(
           blocks[index].id,
