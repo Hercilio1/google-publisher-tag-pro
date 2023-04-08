@@ -1,4 +1,6 @@
-export const defineLazyLoad = (googletag) => {
+import { googletag } from "./adsGlobals";
+
+export const defineLazyLoad = () => {
   googletag.pubads().enableLazyLoad({
     // Fetch slots within 5 viewports.
     fetchMarginPercent: 100,

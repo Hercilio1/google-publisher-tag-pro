@@ -73,8 +73,8 @@ const defineAdsBlocks = () => {
 export const loadAdsBlocks = () => {
   googletag.cmd.push(() => {
     defineAdsBlocks();
-    defineLazyLoad(googletag);
-    defineRefresh(googletag);
+    defineLazyLoad();
+    defineRefresh();
     googletag.enableServices();
   });
 };
