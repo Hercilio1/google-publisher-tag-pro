@@ -1,14 +1,8 @@
+import { CLIENT_DEFAULT_ID, REFRESH_KEY, REFRESH_VALUE } from "./adsSettings";
+import { googletag, blocks } from "./adsGlobals";
 import adsSizes from "./adsSizes";
-import {
-	CLIENT_DEFAULT_ID,
-	REFRESH_KEY,
-	REFRESH_VALUE
-} from "./adsSettings";
-
-/**
- * @constant {Set} loadedBlocks store the ads that are already loaded.
- */
-const loadedBlocks = new Set();
+import defineLazyLoad from "./adsLazyload";
+import defineRefresh from "./adsRefresh";
 
 /**
  * Define a slot based on the sent params
@@ -16,19 +10,15 @@ const loadedBlocks = new Set();
  * @param {string}  id       Block div id.
  * @param {Array}   sizes    Slot enabled sizes.
  * @param {string}  clientIdSuffix   Ad manager client id suffix. Default is ''.
- * @param {string}  agent    'desktop' or 'mobile' or both ('any'). Default is 'any'.
  * @param {boolean} refresh  Refresh ads or not. Default is false.
  * @param {string}  clientIdPrefix A custom clientIdPrefix. Default is null.
- * 
- * @return {Object|null} The slot object or null if the slot has been loaded before.
- * 
+ *
  * @throws {Error} If the slot is not found or it is badly defined.
  */
-export const loadAdBlock = (
+const defineAdSlot = (
   id,
   sizes,
-  clientIdSuffix = '',
-  agent = "any",
+  clientIdSuffix = "",
   refresh = false,
   clientIdPrefix = null
 ) => {
@@ -36,37 +26,57 @@ export const loadAdBlock = (
     throw new Error(`Invalid ad block ${id} - ${sizes} - ${clientIdSuffix}`);
   }
 
-  if (loadedBlocks.has(id)) {
-    return null;
-  }
+  let clientId = CLIENT_DEFAULT_ID + clientIdSuffix;
 
-  if (!clientIdPrefix) {
-    clientId = CLIENT_DEFAULT_ID + clientIdSuffix;
-  } else {
+  if (clientIdPrefix) {
     clientId = clientIdPrefix + clientIdSuffix;
   }
 
-  const currentSlot = googletag.defineSlot(
-    clientId,
-    adsSizes[sizes].sizes,
-    id
-  );
+  const currentSlot = googletag.defineSlot(clientId, adsSizes[sizes].sizes, id);
 
   if (currentSlot) {
     if (refresh) {
       currentSlot.setTargeting(REFRESH_KEY, REFRESH_VALUE);
     }
-
     currentSlot.addService(googletag.pubads());
-
-    return {
-      id,
-      agent,
-      slot: currentSlot,
-    };
-  } 
-  
-  throw new Error(`Ad ${id} not found`);
+  } else {
+    throw new Error(`Ad ${id} not found`);
+  }
 };
 
-export default loadAdBlock;
+/**
+ * Iterate through the blocks and define them.
+ */
+const defineAdsBlocks = () => {
+  for (const index in blocks) {
+    if (blocks[index]) {
+      try {
+        defineAdSlot(
+          blocks[index].id,
+          blocks[index].sizes,
+          blocks[index].clientIdSuffix,
+          blocks[index].refresh,
+          blocks[index].clientIdPrefix
+        );
+        blocks[index].loaded = true;
+      } catch (error) {
+        blocks[index].error = error;
+        console.warn(error.message);
+      }
+    }
+  }
+};
+
+/**
+ * Load the ads and define its structure.
+ */
+export const loadAdsBlocks = () => {
+  googletag.cmd.push(() => {
+    defineAdsBlocks();
+    defineLazyLoad(googletag);
+    defineRefresh(googletag);
+    googletag.enableServices();
+  });
+};
+
+export default loadAdsBlocks;

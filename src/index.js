@@ -1,12 +1,7 @@
-/* global googletag */
-
+import findAdsSlots from "./adsReader";
 import loadAdsBlocks from "./adsLoader";
+import displayAdsBlocks from "./adsRenderer";
 
-window.googletag = window.googletag || { cmd: [] };
-googletag.cmd.push(loadAdsBlocks(googletag));
-
-
-// defineLazyLoad(googletag);
-// defineRefresh(googletag);
-
-// googletag.enableServices();
+findAdsSlots();
+loadAdsBlocks();
+displayAdsBlocks();
