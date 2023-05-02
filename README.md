@@ -13,6 +13,11 @@
 	$ npm version preminor --preid alpha
 	```
 
+- Update the project prerelease version with a prefix:
+	```
+	$ npm version prerelease --preid=alpha
+	```
+
 - Publish the project in NPM
 	```
 	$ npm publish --access public
