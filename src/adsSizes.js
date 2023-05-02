@@ -1,4 +1,6 @@
-export const adsSizes = {
+const gptProSizes = window.gptProSizes;
+
+export const adsSizes = gptProSizes?.sizes ?? {
   "retangulo-1-desktop": {
     sizes: [[300, 250]],
   },
