@@ -47,8 +47,6 @@ const defineAdSlot = (
     clientId = clientIdPrefix + clientIdSuffix;
   }
 
-  console.log("debug:selectedSizes", selectedSizes);
-
   const currentSlot = googletag.defineSlot(clientId, selectedSizes, id);
 
   if (currentSlot) {
