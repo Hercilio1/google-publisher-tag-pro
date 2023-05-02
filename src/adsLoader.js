@@ -8,7 +8,8 @@ import defineRefresh from "./adsRefresh";
  * Define a slot based on the sent params
  *
  * @param {string}  id       Block div id.
- * @param {Array}   sizes    Slot enabled sizes.
+ * @param {string}  sizes    Slot enabled sizes.
+ * @param {Array}  customSizes   Object with custom sizes.
  * @param {string}  clientIdSuffix   Ad manager client id suffix. Default is ''.
  * @param {boolean} refresh  Refresh ads or not. Default is false.
  * @param {string}  clientIdPrefix A custom clientIdPrefix. Default is null.
@@ -18,12 +19,26 @@ import defineRefresh from "./adsRefresh";
 const defineAdSlot = (
   id,
   sizes,
+  customSizes,
   clientIdSuffix = "",
   refresh = false,
   clientIdPrefix = null
 ) => {
-  if (!id || !sizes || !clientIdSuffix) {
-    throw new Error(`Invalid ad block ${id} - ${sizes} - ${clientIdSuffix}`);
+  if (!id || !clientIdSuffix) {
+    throw new Error(`Invalid ad block ${id} - ${clientIdSuffix} - ${sizes}`);
+  }
+
+  let selectedSizes = adsSizes[sizes]?.sizes ?? [];
+  if (customSizes) {
+    selectedSizes = [...selectedSizes, ...customSizes];
+  }
+
+  if (selectedSizes.length === 0) {
+    throw new Error(
+      `Invalid ad block size ${id} - ${clientIdSuffix} - ${sizes} - Custom Sizes: ${
+        customSizes ? JSON.stringify(customSizes) : "null"
+      }`
+    );
   }
 
   let clientId = CLIENT_DEFAULT_ID + clientIdSuffix;
@@ -32,7 +47,9 @@ const defineAdSlot = (
     clientId = clientIdPrefix + clientIdSuffix;
   }
 
-  const currentSlot = googletag.defineSlot(clientId, adsSizes[sizes].sizes, id);
+  console.log("debug:selectedSizes", selectedSizes);
+
+  const currentSlot = googletag.defineSlot(clientId, selectedSizes, id);
 
   if (currentSlot) {
     if (refresh) {
@@ -54,6 +71,7 @@ const defineAdsBlocks = () => {
         defineAdSlot(
           blocks[index].id,
           blocks[index].sizes,
+          blocks[index].customSizes,
           blocks[index].clientIdSuffix,
           blocks[index].refresh,
           blocks[index].clientIdPrefix

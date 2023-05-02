@@ -1,0 +1,7 @@
+{
+  // Configurações JS
+  "eslint.validate": [],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+  },
+}
