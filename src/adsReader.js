@@ -6,6 +6,10 @@ export const findAdsSlots = () => {
   if (ads.length > 0) {
     ads.forEach((currentAd) => {
       const id = currentAd.id;
+      if (blocks[id]?.loaded) {
+        return;
+      }
+
       const sizes = currentAd.getAttribute("ad-sizes");
       const customSizes =
         JSON.parse(currentAd.getAttribute("ad-custom-sizes")) ?? null;
