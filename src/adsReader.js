@@ -20,6 +20,13 @@ export const findAdsSlots = () => {
       const clientIdPrefix =
         currentAd.getAttribute("ad-client-id-prefix") ?? null;
 
+    
+      const targets = currentAd.getAttributeNames().reduce((index, name) => {
+        const attributeName = name.replace('targeting-', '');
+        return { ...index, [attributeName]: currentAd.getAttribute(name) };
+      }, {});
+
+
       blocks[id] = {
         id,
         sizes,
@@ -28,6 +35,7 @@ export const findAdsSlots = () => {
         agent,
         refresh,
         clientIdPrefix,
+        targets
       };
     });
   }
