@@ -20,16 +20,14 @@ export const findAdsSlots = () => {
       const clientIdPrefix =
         currentAd.getAttribute("ad-client-id-prefix") ?? null;
 
-      const targets = {
-          'ad-page-id': currentAd.getAttribute("ad-page-id") ?? null,
-          'ad-page-slug': currentAd.getAttribute("ad-page-slug") ?? null,
-          'ad-post-id': currentAd.getAttribute("ad-post-id") ?? null,
-          'ad-post-tag': currentAd.getAttribute("ad-post-tag") ?? null,
-          'ad-primary-category': currentAd.getAttribute("ad-primary-category") ?? null,
-          'ad-category': currentAd.getAttribute("ad-category") ?? null,
-          'ad-term-id': currentAd.getAttribute("ad-term-id") ?? null,
-          'ad-page-type': currentAd.getAttribute("ad-page-type") ?? null
-      };
+      const targetingDiv = currentAd.querySelector('[ad-targeting]');
+      const attributes = targetingDiv ? Array.from(targetingDiv.attributes) : [];
+      const targets = {};
+
+      attributes.forEach((attribute) => {
+        const attributeName = attribute.name.replace('targeting-', '');
+        targets[`ad-slug-${attributeName}`] = attribute.value;
+      });
 
       blocks[id] = {
         id,
