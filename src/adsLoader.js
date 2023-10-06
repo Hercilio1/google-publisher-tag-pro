@@ -13,6 +13,7 @@ import defineRefresh from "./adsRefresh";
  * @param {string}  clientIdSuffix   Ad manager client id suffix. Default is ''.
  * @param {boolean} refresh  Refresh ads or not. Default is false.
  * @param {string}  clientIdPrefix A custom clientIdPrefix. Default is null.
+ * @param {Array} targets object with all targeting items.
  *
  * @throws {Error} If the slot is not found or it is badly defined.
  */
@@ -22,7 +23,8 @@ const defineAdSlot = (
   customSizes,
   clientIdSuffix = "",
   refresh = false,
-  clientIdPrefix = null
+  clientIdPrefix = null,
+  targets = []
 ) => {
   if (!id || !clientIdSuffix) {
     throw new Error(`Invalid ad block ${id} - ${clientIdSuffix} - ${sizes}`);
@@ -53,6 +55,11 @@ const defineAdSlot = (
     if (refresh) {
       currentSlot.setTargeting(REFRESH_KEY, REFRESH_VALUE);
     }
+    for (const key in targets) {
+      if (targets.hasOwnProperty(key)) {
+        currentSlot.setTargeting(key, targets[key]);
+      }
+    }
     currentSlot.addService(googletag.pubads());
   } else {
     throw new Error(`Ad ${id} not found`);
@@ -72,7 +79,8 @@ const defineAdsBlocks = () => {
           blocks[index].customSizes,
           blocks[index].clientIdSuffix,
           blocks[index].refresh,
-          blocks[index].clientIdPrefix
+          blocks[index].clientIdPrefix,
+          blocks[index].targets
         );
         blocks[index].loaded = true;
       } catch (error) {
