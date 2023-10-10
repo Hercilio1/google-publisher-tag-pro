@@ -1,7 +1,7 @@
 const gptProSettings = window.gptProSettings;
 
 export const CLIENT_DEFAULT_ID =
-  gptProSettings?.CLIENT_DEFAULT_ID ?? "/6355419/";
+  gptProSettings?.CLIENT_DEFAULT_ID ?? "/";
 export const REFRESH_KEY = gptProSettings?.REFRESH_KEY ?? "refresh";
 export const REFRESH_VALUE = gptProSettings?.REFRESH_VALUE ?? "true";
 export const SECONDS_TO_WAIT_AFTER_VIEWABILITY =
