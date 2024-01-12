@@ -56,8 +56,15 @@ const defineAdSlot = (
       currentSlot.setTargeting(REFRESH_KEY, REFRESH_VALUE);
     }
     for (const key in targets) {
-      if (targets.hasOwnProperty(key)) {
-        currentSlot.setTargeting(key, targets[key]);
+      if (targets?.[key]) {
+        let parsedTarget = targets[key];
+        try {
+          parsedTarget = JSON.parse(parsedTarget);
+        } catch (e) {
+          // pass
+        }
+        console.log("debug:maybeStringfy", parsedTarget, typeof parsedTarget);
+        currentSlot.setTargeting(key, parsedTarget);
       }
     }
     currentSlot.addService(googletag.pubads());
